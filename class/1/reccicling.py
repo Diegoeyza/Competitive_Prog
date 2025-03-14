@@ -17,8 +17,6 @@ def generate_permutations(elements, start=0, orders=[]):
     for i in range(start, len(elements)):
         # Swap elements to create a new order
         elements[start], elements[i] = elements[i], elements[start]
-        print(start)
-        print(f"{elements[start]}, {elements[i]}")
         generate_permutations(elements, start + 1, orders)
         # Swap back to restore the original order (backtracking)
         elements[start], elements[i] = elements[i], elements[start]
@@ -31,7 +29,26 @@ generate_permutations(current, 0, orders)
 for order in orders:
     print(order)
 
-'''
-for i in range (3):
+total_movements=[0]*len(orders)
+print(total_movements)
+
+for i in range (len(orders)):
     for j,item in enumerate(matrix):
-'''
+        if (j<3):
+            idx=orders[i].index("B")
+            if (idx!=j):
+                total_movements[i]+=matrix[j]
+        elif (j<6):
+            idx=orders[i].index("G")
+            if (idx!=j-3):
+                total_movements[i]+=matrix[j]
+            pass
+        else:
+            idx=orders[i].index("C")
+            if (idx!=j-6):
+                total_movements[i]+=matrix[j]
+            pass
+print(total_movements)
+result=min(total_movements)
+best=orders[total_movements.index(result)]
+print(f"{best} {result}")
