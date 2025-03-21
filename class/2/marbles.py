@@ -32,7 +32,7 @@ while marbles != 0:
     cost2, c2 = [int(item) for item in stdin.readline().split()]
     comb=find_combinations(c1,c2, marbles)
     for i,item in enumerate(comb):
-        if (comb[i][0]*cost1+comb[i][1]*cost2<cost):
+        if (comb[i][0]*cost1+comb[i][1]*cost2<=cost):
             idx=i
             cost=comb[i][0]*cost1+comb[i][1]*cost2
     if (len(comb)==0):
