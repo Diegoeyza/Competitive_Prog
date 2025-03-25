@@ -90,24 +90,61 @@ class line:
             / (math.sqrt(self.a**2 + self.b**2)*math.sqrt(line.a**2+line.b**2))
         )
 
+# @dataclass
+# class segment:
+#     p: point
+#     q: point
+
+#     def does_intersect(self, seg2, *, include_p=False, include_q=False):
+#         cross1 = (seg2.q - self.p).cross(self.q - self.p)
+#         cross2 = (seg2.p - self.p).cross(self.q - self.p)
+#         cross3 = (self.q - seg2.p).cross(seg2.q - seg2.p)
+#         cross4 = (self.p - seg2.p).cross(seg2.q - seg2.p)
+#         return (
+#             (cross1 * cross2 < 0 or
+#                 (include_p and math.fabs(cross2) < EPS)
+#                 or (include_q and math.fabs(cross1) < EPS))
+#             and (cross3 * cross4 < 0
+#                 or (include_p and math.fabs(cross4) < EPS)
+#                 or (include_q and math.fabs(cross3) < EPS))
+#         )
+
+
+
 @dataclass
 class segment:
     p: point
     q: point
 
     def does_intersect(self, seg2, *, include_p=False, include_q=False):
+        
+        def on_segment(p, q, r):
+            return min(p.x, q.x) <= r.x <= max(p.x, q.x) and min(p.y, q.y) <= r.y <= max(p.y, q.y)
+
         cross1 = (seg2.q - self.p).cross(self.q - self.p)
         cross2 = (seg2.p - self.p).cross(self.q - self.p)
         cross3 = (self.q - seg2.p).cross(seg2.q - seg2.p)
         cross4 = (self.p - seg2.p).cross(seg2.q - seg2.p)
-        return (
-            (cross1 * cross2 < 0 or
-                (include_p and math.fabs(cross2) < EPS)
-                or (include_q and math.fabs(cross1) < EPS))
-            and (cross3 * cross4 < 0
-                or (include_p and math.fabs(cross4) < EPS)
-                or (include_q and math.fabs(cross3) < EPS))
-        )
+
+        if (cross1 * cross2 < 0) and (cross3 * cross4 < 0):
+            return True  
+
+        if abs(cross1) < EPS and on_segment(self.p, self.q, seg2.q):
+            return True
+        if abs(cross2) < EPS and on_segment(self.p, self.q, seg2.p):
+            return True
+        if abs(cross3) < EPS and on_segment(seg2.p, seg2.q, self.q):
+            return True
+        if abs(cross4) < EPS and on_segment(seg2.p, seg2.q, self.p):
+            return True
+
+        if include_p and (abs(cross1) < EPS or abs(cross2) < EPS):
+            return True
+        if include_q and (abs(cross3) < EPS or abs(cross4) < EPS):
+            return True
+
+        return False
+
 
 
 
@@ -191,5 +228,53 @@ def hull(points):  #given a set of random points, it returns a convex polygon th
 
 
 # -------------------------------------------------------------------------------------------------------------
-#djear un \n luego de cada camino
-#si o si debe haber un arbol en el primer pto del polígono y en el último pto
+
+
+stdin = io.StringIO("""6
+3
+0 0 2 0
+1 -1 1 1
+2 2 3 3
+2
+0 0 1 1
+1 0 0 1
+2
+0 0 0 1
+0 2 0 3
+2
+0 0 1 0
+1 0 2 0
+2
+0 0 2 2
+1 0 1 1
+2
+1 3 1 5
+1 0 1 6""")
+
+total = int(stdin.readline())
+for seg_set in range (total):
+    lines=[]
+    segments=int(stdin.readline())
+    for num in range (segments):
+        segment_i= (stdin.readline().split())
+        p1=point(int(segment_i[0]),int(segment_i[1]))
+        p2=point(int(segment_i[2]),int(segment_i[3]))
+        s=segment(p1,p2)
+        lines.append(s)
+        #print(s)
+    isol=0
+    for i in range (segments):
+        verifier=False
+        for j in range (segments):
+            if (i!=j):
+                if lines[i].does_intersect(lines[j]) and not verifier:
+                    #print("inter")
+                    verifier=True
+        if not verifier:
+            isol+=1
+    print(f"{isol}")
+
+
+
+
+
