@@ -90,27 +90,6 @@ class line:
             / (math.sqrt(self.a**2 + self.b**2)*math.sqrt(line.a**2+line.b**2))
         )
 
-# @dataclass
-# class segment:
-#     p: point
-#     q: point
-
-#     def does_intersect(self, seg2, *, include_p=False, include_q=False):
-#         cross1 = (seg2.q - self.p).cross(self.q - self.p)
-#         cross2 = (seg2.p - self.p).cross(self.q - self.p)
-#         cross3 = (self.q - seg2.p).cross(seg2.q - seg2.p)
-#         cross4 = (self.p - seg2.p).cross(seg2.q - seg2.p)
-#         return (
-#             (cross1 * cross2 < 0 or
-#                 (include_p and math.fabs(cross2) < EPS)
-#                 or (include_q and math.fabs(cross1) < EPS))
-#             and (cross3 * cross4 < 0
-#                 or (include_p and math.fabs(cross4) < EPS)
-#                 or (include_q and math.fabs(cross3) < EPS))
-#         )
-
-
-
 @dataclass
 class segment:
     p: point

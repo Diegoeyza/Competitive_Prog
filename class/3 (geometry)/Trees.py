@@ -191,3 +191,50 @@ def hull(points):  #given a set of random points, it returns a convex polygon th
 
 
 # -------------------------------------------------------------------------------------------------------------
+#djear un \n luego de cada camino
+#si o si debe haber un arbol en el primer pto del polígono y en el último pto
+
+stdin = io.StringIO("""2
+5 6
+10.00 10.00
+20.00 20.00
+30.00 10.00
+10.00 0.00
+9.00 9.00
+3 2
+0.00 0.00
+10.00 10.00
+20.00 20.00""")
+
+total = int(stdin.readline())
+
+for road in range(total):
+    points, trees = map(int, stdin.readline().split())
+    coordinates = [list(map(float, stdin.readline().split())) for _ in range(points)]
+    segment_list = []
+    for i in range(points - 1):
+        x1, y1 = coordinates[i]
+        x2, y2 = coordinates[i + 1]
+        segment_len = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+        segment_list.append(segment_len)
+    total_length = sum(segment_list)
+    distance = total_length / (trees - 1) 
+    print(f"Road #{road + 1}:")
+    print(f"{coordinates[0][0]:.2f} {coordinates[0][1]:.2f}")
+    current_segment = 0
+    traveled = 0  
+    for i in range(trees - 2):  
+        traveled += distance
+        while traveled > segment_list[current_segment]:  
+            traveled -= segment_list[current_segment]
+            current_segment += 1
+        
+        x1, y1 = coordinates[current_segment]
+        x2, y2 = coordinates[current_segment + 1]
+        ratio = traveled / segment_list[current_segment]
+        tree_x = x1 + (x2 - x1) * ratio
+        tree_y = y1 + (y2 - y1) * ratio
+        
+        print(f"{tree_x:.2f} {tree_y:.2f}")
+    print(f"{coordinates[-1][0]:.2f} {coordinates[-1][1]:.2f}\n")
+
