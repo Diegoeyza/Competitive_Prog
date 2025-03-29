@@ -73,9 +73,10 @@ class line:
         return -self.c / math.sqrt(self.a**2 + self.b**2)
     
     def intersect(self, l):
+        print((self.b*l.c - l.b*self.c))
         return point(
             (self.b*l.c - l.b*self.c)/ (self.a*l.b - l.a*self.b),
-            (self.a*l.c - l.a*self.c)/ (self.a*l.b - l.a*self.b)
+            (self.a*l.c - l.a*self.c)/ (l.a*self.b-self.a*l.b)
         )
     
     def are_parallel(self, line):
@@ -96,37 +97,18 @@ class segment:
     q: point
 
     def does_intersect(self, seg2, *, include_p=False, include_q=False):
-        """Checks if two segments intersect, considering endpoints and collinear overlap."""
-        
-        def on_segment(p, q, r):
-            """Checks if point r lies on segment pq when collinear."""
-            return min(p.x, q.x) <= r.x <= max(p.x, q.x) and min(p.y, q.y) <= r.y <= max(p.y, q.y)
-
         cross1 = (seg2.q - self.p).cross(self.q - self.p)
         cross2 = (seg2.p - self.p).cross(self.q - self.p)
         cross3 = (self.q - seg2.p).cross(seg2.q - seg2.p)
         cross4 = (self.p - seg2.p).cross(seg2.q - seg2.p)
-
-        if (cross1 * cross2 < 0) and (cross3 * cross4 < 0):
-            return True  
-
-        if abs(cross1) < EPS and on_segment(self.p, self.q, seg2.q):
-            return True
-        if abs(cross2) < EPS and on_segment(self.p, self.q, seg2.p):
-            return True
-        if abs(cross3) < EPS and on_segment(seg2.p, seg2.q, self.q):
-            return True
-        if abs(cross4) < EPS and on_segment(seg2.p, seg2.q, self.p):
-            return True
-
-        # Check for strict endpoint touching (only count if include_p/include_q is enabled)
-        if include_p and (abs(cross1) < EPS or abs(cross2) < EPS):
-            return True
-        if include_q and (abs(cross3) < EPS or abs(cross4) < EPS):
-            return True
-
-        return False
-
+        return (
+            (cross1 * cross2 < 0 or
+                (include_p and math.fabs(cross2) < EPS)
+                or (include_q and math.fabs(cross1) < EPS))
+            and (cross3 * cross4 < 0
+                or (include_p and math.fabs(cross4) < EPS)
+                or (include_q and math.fabs(cross3) < EPS))
+        )
 
 
 
@@ -210,56 +192,3 @@ def hull(points):  #given a set of random points, it returns a convex polygon th
 
 
 # -------------------------------------------------------------------------------------------------------------
-
-
-
-def circumcircle(p1: point, p2: point, p3: point):
-    # Midpoints of two segments
-    mid1 = point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2)
-    mid2 = point((p2.x + p3.x) / 2, (p2.y + p3.y) / 2)
-
-    # Perpendicular bisectors
-    l1 = line.from_points(mid1, point(mid1.x + (p2.y - p1.y), mid1.y - (p2.x - p1.x)))
-    l2 = line.from_points(mid2, point(mid2.x + (p3.y - p2.y), mid2.y - (p3.x - p2.x)))
-
-    # Intersection = circumcenter
-    center = l1.intersect(l2)
-    print(f"center={center}")
-    h, k = center.x, center.y
-
-    # Radius squared
-    r2 = (p1 - center).dot(p1 - center)
-    r = (p1 - center).norm() 
-    print(f"rad={r}")
-
-    # General form: x^2 + y^2 + Cx + Dy + E = 0
-    C = -2 * h
-    D = -2 * k
-    E = h**2 + k**2 - r2
-
-    # Print results
-    print(f"(x - {h:+.3f})^2 + (y - {k:+.3f})^2 = {math.sqrt(r2):.3f}^2")
-    print(f"x^2 + y^2 {C:+.3f}x {D:+.3f}y {E:+.3f} = 0")
-
-
-
-stdin = io.StringIO("""7.0 -5.0 -1.0 1.0 0.0 -6.0
-1.0 7.0 8.0 6.0 7.0 -2.0
-""")
-
-lin = [float(i) for i in stdin.readline().split()]
-while len(lin)>0:
-    print(lin)
-    p1=point(lin[0],lin[1])
-    p2=point(lin[2],lin[3])
-    p3=point(lin[4],lin[5])
-    circumcircle(p1,p2,p3)
-    lin = [float(i) for i in stdin.readline().split()]
-
-
-
-
-
-
-
-
