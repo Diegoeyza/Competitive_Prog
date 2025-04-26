@@ -31,19 +31,29 @@ def kinda_red_black(graph, node, color, colors):
     colors[node] = color
     count = [0, 0]
     count[color] += 1
+    component_nodes = [node]
+    is_valid = True
 
-    while len(queue)!=0:
+    while queue:
         u = queue.pop(0)
-        # print(u)\
         for v in graph[u]:
             if colors[v] == -1:
                 colors[v] = 1 - colors[u]
                 count[colors[v]] += 1
                 queue.append(v)
+                component_nodes.append(v)
             elif colors[v] == colors[u]:
-                return 0
-    # print(f"val= {count}")
-    return max(count)
+                is_valid = False
+
+    for node in component_nodes:
+        colors[node] = 2  
+    
+    if is_valid:
+        return max(count)
+    return 0
+
+
+
 
 
 
@@ -60,16 +70,18 @@ def calc_inv():
         graph = [[] for aux in range(n)]
         for j in range(n):
             data = [int(item) for item in stdin.readline().split()]
+            # print(data)
             for enemy in data[1:]:
-                graph[j].append(enemy - 1)
-                graph[enemy - 1].append(j)
+                if 1 <= enemy <= n:
+                    graph[j].append(enemy - 1)
+                    graph[enemy - 1].append(j)
 
         colors = [-1] * n
         total = 0
         for i in range(n):
             if colors[i] == -1:
                 res = kinda_red_black(graph, i, 0, colors)
-                if res != 0:
+                if res > 0:
                     total += res
         # print("total")
         print(total)
