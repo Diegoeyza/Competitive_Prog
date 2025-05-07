@@ -305,9 +305,9 @@ print("Is bipartite:", largest_color_class > 0)
 print("Size of largest color class:", largest_color_class)
 
 #sol
-1 — 2
-|   |
-4 — 3
+# 1 — 2
+# |   |
+# 4 — 3
 
 # It's a cycle with 4 nodes — an even cycle, which is always bipartite.
 
