@@ -94,7 +94,8 @@ class Graph:
                 yield u
                 for v, _ in reversed(self.graph[u]):
                     stack.append(v)
-
+    
+    #returns the first path it finds with the lowest cost, regardless of the length
     def dijkstra(self, start):
         dist = {}
         heap = [(0, start)]
@@ -194,6 +195,7 @@ class Graph:
             flow += path_flow
         return flow, cost_total
     
+    #returns every path from a to b with their associated cost, in the format [[[path],cost],[[path],cost]]
     def all_paths_with_cost(self, start, end):
         def dfs(u, path, cost, visited):
             if u == end:
