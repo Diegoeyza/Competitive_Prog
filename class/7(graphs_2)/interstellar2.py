@@ -289,28 +289,17 @@ for _ in range(q):
     start, end = stdin.readline().split()
 
     # Get full distance dictionary
-    distances = g.dijkstra(start)
+    distances = g.all_paths_with_cost(start,end)
+    # print(distances)
 
-    # Reconstruct path (same logic as original code)
-    previous = {}
-    heap = [(0, start)]
-    visited = set()
-    while heap:
-        cost, node = heapq.heappop(heap)
-        if node in visited:
-            continue
-        visited.add(node)
-        for neighbor, w in g.graph[node]:
-            if neighbor not in visited and distances[neighbor] == cost + w:
-                previous[neighbor] = node
-                heapq.heappush(heap, (distances[neighbor], neighbor))
+    min_cost = float('inf')
+    min_idx=-1
+    for item in distances:
+        if item[1] <= min_cost:
+            min_cost = item[1]
+            min_idx = distances.index(item)
+        elif item[1] <= min_cost and len(item[0])<len(distances[min_idx][0]):
+            min_cost = item[1]
+            min_idx = distances.index(item)
+    print(" ".join(distances[min_idx][0]))
 
-    # Reconstruct path from end to start
-    path = []
-    current = end
-    while current in previous or current == start:
-        path.append(current)
-        if current == start:
-            break
-        current = previous[current]
-    print(" ".join(reversed(path)))
