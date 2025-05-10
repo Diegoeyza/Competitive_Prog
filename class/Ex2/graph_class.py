@@ -96,7 +96,7 @@ class Graph:
                 for v, _ in reversed(self.graph[u]):
                     stack.append(v)
     
-    #returns the first path it finds with the lowest cost to every node from start, regardless of the length
+    #returns the first path it finds with the lowest cost to every node from start, regardless of the length of the path
     def dijkstra(self, start):
         dist = {}
         heap = [(0, start)]
@@ -110,8 +110,8 @@ class Graph:
                     heapq.heappush(heap, (d + w, v))
         return dist
     
-    #same as the above, but this one returns the distance to one node, not to all
-    def dijkstra_path(self, start, end):
+    #same as the above, but this one returns the distance to one node, not to all, so its the shortest distance from A to B. it returns [[path],cost]
+    def dijkstra_single(self, start, end):
         dist = {}
         prev = {}
         heap = [(0, start)]
@@ -138,7 +138,7 @@ class Graph:
         path.reverse()
         return path, dist[end]
 
-
+    #returns int: the total maximum flow from source node `s` to sink node `t`
     def max_flow(self, s, t):
         parent = {}
 
@@ -177,6 +177,7 @@ class Graph:
             flow += path_flow
         return flow
 
+    #returns a tuple with 2 vals: (flow_sent, total_cost)
     def min_cost_flow(self, s, t, max_flow):
         n = defaultdict(lambda: float('inf'))
         flow = 0
