@@ -96,7 +96,7 @@ class Graph:
                 for v, _ in reversed(self.graph[u]):
                     stack.append(v)
     
-    #returns the first path it finds with the lowest cost to every node from start, regardless of the length
+    #returns the first path it finds with the lowest cost, regardless of the length
     def dijkstra(self, start):
         dist = {}
         heap = [(0, start)]
@@ -319,22 +319,22 @@ class Graph:
 #bipartite
 
 # Create a graph instance
-g = Graph(directed=False)
+# g = Graph(directed=False)
 
-# Add edges to create a bipartite graph (e.g., a square)
-g.add_edge(1, 2)
-g.add_edge(2, 3)
-g.add_edge(3, 4)
-g.add_edge(4, 1)
+# # Add edges to create a bipartite graph (e.g., a square)
+# g.add_edge(1, 2)
+# g.add_edge(2, 3)
+# g.add_edge(3, 4)
+# g.add_edge(4, 1)
 
-# Prepare colors dictionary (-1 means unvisited)
-colors = defaultdict(lambda: -1)
+# # Prepare colors dictionary (-1 means unvisited)
+# colors = defaultdict(lambda: -1)
 
-# Call the bipartite method on one of the nodes
-largest_color_class = g.bipartite(start=1, color=0, colors=colors)
+# # Call the bipartite method on one of the nodes
+# largest_color_class = g.bipartite(start=1, color=0, colors=colors)
 
-print("Is bipartite:", largest_color_class > 0)
-print("Size of largest color class:", largest_color_class)
+# print("Is bipartite:", largest_color_class > 0)
+# print("Size of largest color class:", largest_color_class)
 
 #sol
 # 1 — 2
@@ -370,3 +370,107 @@ print("Size of largest color class:", largest_color_class)
 # Largest color class size = 2 🔢
 
 
+
+def distance(a,b):
+    x1, y1=map(int, a.split(','))
+    x2, y2=map(int, b.split(','))
+    return math.hypot(x1 - x2, y1 - y2)
+
+def dijkstra(graph, start, end):
+    distances = {node: float('inf') for node in graph}
+    distances[start] = 0
+    previous = {node: None for node in graph}
+    queue = [(0, start)]
+    while queue:
+        current_distance, current_node = heapq.heappop(queue)
+        if current_node == end:
+            break
+        if current_distance > distances[current_node]:
+            continue
+        for neighbor, weight in graph[current_node]:
+            distance = current_distance + weight
+            if distance < distances[neighbor]:
+                distances[neighbor] = distance
+                previous[neighbor] = current_node 
+                heapq.heappush(queue, (distance, neighbor))
+    path = []
+    node = end
+    if previous[node] is not None or node == start: 
+        while node is not None:
+            path.append(node)
+            node = previous[node]
+        path.reverse()
+    return path, distances[end]
+
+
+stdin = io.StringIO("""1
+
+0 0 10000 1000
+0 200 5000 200 7000 200 -1 -1
+2000 600 5000 600 10000 600 -1 -1
+""")
+
+cases = int(stdin.readline())
+stdin.readline()
+
+g = Graph(directed=True)
+g.add_edge('A', 'B', 1)
+g.add_edge('A', 'C', 2)
+g.add_edge('B', 'C', 1)
+g.add_edge('C', 'D', 3)
+g.add_edge('B', 'D', 5)
+for case_n in range(cases):
+    coords= stdin.readline().split()
+    home=",".join(coords[:2])
+    school=",".join(coords[2:])
+    
+    points={home, school}
+    subway_lines =[]
+    
+    line =stdin.readline().split()
+    
+    while line:
+        subway = []
+        for i in range(0, len(line) - 2, 2):
+            if line[i] == "-1" and line[i+1] == "-1":
+                break
+            point = ",".join(line[i:i+2])
+            subway.append(point)
+            points.add(point)
+        if subway:
+            subway_lines.append(subway)
+        line = stdin.readline().split()
+        if not line:
+            break
+    
+
+    graph = {p: [] for p in points}
+    g = Graph(directed=True)
+
+    for line in subway_lines:
+        for i in range(len(line) - 1):
+            d =distance(line[i], line[i+1])
+            time=d/(40000/60) 
+            graph[line[i]].append((line[i+1], time))
+            g.add_edge(line[i],line[i+1],time)
+            graph[line[i+1]].append((line[i], time))
+            g.add_edge(line[i+1],line[i],time)
+    # print(graph)
+    point_list =list(points)
+    for i in range(len(point_list)):
+        for j in range(i+1, len(point_list)):
+            a,b= point_list[i], point_list[j]
+            d=distance(a, b)
+            time= d/(10000/60)
+            g.add_edge(a,b,time)
+            g.add_edge(b,a,time)
+            graph[a].append((b, time))
+            graph[b].append((a, time))
+    # print(graph["0,200"])
+    
+    path, total_time=dijkstra(graph,home, school)
+    total_time2=g.dijkstra_path(home,school)
+
+    print(total_time2)
+    
+    print(f"{round(total_time)}\n")
