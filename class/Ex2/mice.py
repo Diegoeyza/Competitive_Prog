@@ -1,7 +1,7 @@
 import heapq, io
 from collections import deque, defaultdict
-import math
 from sys import stdin
+import math
 
 class Graph:
     def __init__(self, directed=False):
@@ -245,44 +245,6 @@ class Graph:
         visited = set([start])
         dfs(start, [start], 0, visited)
         return result
-    
-
-    def bipartite(self, start, color, colors):
-        """
-        Check if the connected component starting from `start` is bipartite.
-        Uses BFS to attempt a 2-coloring of the graph.
-        
-        Args:
-            start: The starting node for the component.
-            color: The initial color to assign to the starting node (0 or 1).
-            colors: A dictionary mapping nodes to their color (-1 if unvisited).
-
-        Returns:
-            The size of the larger color class if the component is bipartite,
-            otherwise 0 if the component contains an odd cycle.
-        """
-        queue = deque([start])
-        colors[start] = color
-        count = [0, 0]
-        count[color] += 1
-        component_nodes = [start]
-        is_valid = True
-
-        while queue:
-            u = queue.popleft()
-            for v, _ in self.graph[u]:  # Use self.graph to access adjacency list
-                if colors[v] == -1:
-                    colors[v] = 1 - colors[u]
-                    count[colors[v]] += 1
-                    queue.append(v)
-                    component_nodes.append(v)
-                elif colors[v] == colors[u]:
-                    is_valid = False
-
-        for node in component_nodes:
-            colors[node] = 2  # Mark as processed
-
-        return max(count) if is_valid else 0
 
 
 
@@ -291,84 +253,41 @@ class Graph:
         self.capacity.clear()
         self.cost.clear()
 
-#all paths
-# g = Graph(directed=True)
-# g.add_edge('A', 'B', 1)
-# g.add_edge('A', 'C', 2)
-# g.add_edge('B', 'C', 1)
-# g.add_edge('C', 'D', 3)
-# g.add_edge('B', 'D', 5)
 
-# paths = g.all_paths_with_cost('A', 'D')
-# for path, cost in paths:
-#     print("Path:", path, "Cost:", cost)
+# stdin = io.StringIO("""1
 
-# # max flow
-# g = Graph(directed=True)
+# 4
+# 2
+# 0
+# 8
+# 1 2 1
+# 1 3 1
+# 2 1 1
+# 2 4 1
+# 3 1 1
+# 3 4 1
+# 4 2 1
+# 4 3 1
+# """)
+    
+        
+cases= int(stdin.readline().strip())
+for i in range (cases):
+    stdin.readline()
+    N= int(stdin.readline().strip())
+    E=stdin.readline().strip()
+    T=int(stdin.readline().strip())
+    M=int(stdin.readline().strip())
+    g=Graph()
+    for j in range (M):
+        coords=[item for item in stdin.readline().split()]
+        g.add_edge(coords[0],coords[1],int(coords[2]))
+    mice=0
+    times=g.dijkstra(E)
+    for item in times.keys():
+        if times[item]<=T:
+            mice+=1
+    print(mice)
+    g.clear()
 
-# # Add edges with capacities
-# g.add_edge('S', 'A', cap=10)
-# g.add_edge('S', 'B', cap=5)
-# g.add_edge('A', 'B', cap=15)
-# g.add_edge('A', 'T', cap=10)
-# g.add_edge('B', 'T', cap=10)
-
-# # Compute max flow
-# maxflow = g.max_flow('S', 'T')
-# print("Maximum Flow:", maxflow)
-
-
-#bipartite
-
-# Create a graph instance
-g = Graph(directed=False)
-
-# Add edges to create a bipartite graph (e.g., a square)
-g.add_edge(1, 2)
-g.add_edge(2, 3)
-g.add_edge(3, 4)
-g.add_edge(4, 1)
-
-# Prepare colors dictionary (-1 means unvisited)
-colors = defaultdict(lambda: -1)
-
-# Call the bipartite method on one of the nodes
-largest_color_class = g.bipartite(start=1, color=0, colors=colors)
-
-print("Is bipartite:", largest_color_class > 0)
-print("Size of largest color class:", largest_color_class)
-
-#sol
-# 1 — 2
-# |   |
-# 4 — 3
-
-# It's a cycle with 4 nodes — an even cycle, which is always bipartite.
-
-# What Bipartite Means
-# A bipartite graph is one where:
-# You can split the nodes into two sets (say, Red and Blue),
-# Such that no edge connects two nodes of the same set.
-
-# This is equivalent to saying:
-# The graph can be 2-colored with no two adjacent nodes sharing the same color.
-
-# The bipartite Method:
-# The method does the following:
-# Starts coloring node 1 with color 0 (say, Red).
-# Its neighbors (node 2 and 4) get color 1 (Blue).
-# Then, node 2's neighbor 3 gets color 0 (Red again).
-# Node 3's neighbor 4 already has color 1, which is fine (not equal to 3’s color 0).
-# No conflicts are found → it's bipartite.
-
-# Why "size of largest color class = 2"?
-# The method counts how many nodes got color 0 and how many got 1:
-# Color 0: nodes 1, 3 → 2 nodes
-# Color 1: nodes 2, 4 → 2 nodes
-# → max(count) is 2, which is the result.
-
-# So:
-# Yes, it's bipartite ✅
-# Largest color class size = 2 🔢
-
-
+        
