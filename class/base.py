@@ -1,6 +1,12 @@
 from sys import stdin
 import io
 import math
+import functools
+
+@functools.lru_cache(None)   #improves recursive call speed
+def something():
+    return 0
+
 stdin = io.StringIO("""12
 10
 5
