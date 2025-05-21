@@ -34,18 +34,18 @@ stdin = io.StringIO("""24 3
 0 0""")
 
 
-
+max_num=1120
+primes=find_primes(max_num,0)
+comb=[[0]*(max_num+1) for length in range (14+1)]
+comb[0][0]=1
+for prime in primes:
+    for length in range (14, 0, -1):
+        for num in range (prime, max_num+1):
+            comb[length][num]+=comb[length-1][num-prime]
 n, k = map(int, stdin.readline().split()) 
 while n!=0:
-    primes=find_primes(n,0)
-    comb=combinations(primes,k)
-    counter=0
-    for c in comb:
-        if len(c)<k:
-            continue
-        if sum(c)==n:
-            counter+=1
-    print(f"N={n}, counter={counter}")
+    # print(comb)
+    print(f"{comb[k][n]}")
 
         
     try:
