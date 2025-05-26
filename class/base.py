@@ -15,7 +15,7 @@ stdin = io.StringIO("""12
 
 input_value = int(stdin.readline().strip())
 
-s, d = map(int, stdin.readline().split()) 
+s, d = list(map(int, stdin.readline().split()))
 while s!="":
     try:
         s, d = map(int, stdin.readline().split()) 
