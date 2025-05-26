@@ -285,6 +285,81 @@ class Graph:
         return max(count) if is_valid else 0
 
 
+    def traveling_merchant(self,start=0,end=None):
+        if end is None:
+            end=start
+
+        nodes=list(self.graph.keys())
+        if start not in nodes or end not in nodes:
+            return [], float('inf')
+
+        idx = {node: i for i, node in enumerate(nodes)}
+        n   = len(nodes)
+
+        #used as a base a function from stackoverflow because the travelling salesman problem does not support starting and ending at the same point, so it uses this when it fails and using bit shift it adds the return to the start
+        def hamilton_path(s_idx, f_idx):
+            dp= [[float('inf')]*n for aux in range(1<<n)]
+            parent = [[-1]*n for aux in range(1<<n)]
+            dp[1 << s_idx][s_idx] = 0
+
+            for mask in range(1 << n):
+                for u in range(n):
+                    if not (mask & (1 << u)):
+                        continue
+                    for v_node, w in self.graph[nodes[u]]:
+                        v = idx[v_node]
+                        if mask & (1 << v):                
+                            continue
+                        nxt = mask | (1 << v)
+                        new_cost = dp[mask][u] + w
+                        if new_cost < dp[nxt][v]:
+                            dp[nxt][v]= new_cost
+                            parent[nxt][v]=u
+
+            full = (1 << n) - 1
+            cost = dp[full][f_idx]
+            if cost == float('inf'):
+                return [], cost
+
+            mask = full
+            cur  = f_idx
+            path = []
+            while cur != -1:
+                path.append(nodes[cur])
+                prv = parent[mask][cur]
+                if prv == -1:
+                    break
+                mask ^= 1 << cur
+                cur = prv
+            path.reverse()
+            return path, cost
+
+        if start != end:
+            return hamilton_path(idx[start], idx[end])
+        
+        best_cost = float('inf')
+        best_path = []
+
+        s_idx=idx[start]
+        for last_node in nodes:
+            if last_node==start:
+                continue
+            last_idx=idx[last_node]
+            path, path_cost  = hamilton_path(s_idx, last_idx)
+            if path_cost == float('inf'):
+                continue
+            back_cost = next((w for v,w in self.graph[last_node] if v==start), None)
+            if back_cost is None:
+                continue
+            total = path_cost + back_cost
+            if total<best_cost:
+                best_cost=total
+                best_path=path+[start]
+
+        return best_path,best_cost
+
+
+
 
     def clear(self):
         self.graph.clear()

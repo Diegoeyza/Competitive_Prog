@@ -56,14 +56,14 @@ while cases!="":
     base=list(map(int, stdin.readline().split()))
     dict={}
     for i in range (cases):
-        dict[base[i]]=i+1
-    # print(dict)
+        dict[i+1]=base[i]
+    print(dict)
 
     student=list(map(int, stdin.readline().split()))
     while len(student)>1:
-        order=[]
-        for i in range(cases):
-            order.append(dict[student[i]])
+        order=[0 for _ in range (cases)]
+        for i,value in enumerate(student):
+            order[value-1]=dict[i+1]
         # print(order)
 
         # print(student)
