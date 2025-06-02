@@ -357,6 +357,26 @@ class Graph:
                 best_path=path+[start]
 
         return best_path,best_cost
+    
+
+
+    def print_graph(self):
+        print("Graph adjacency list:")
+        for u in self.graph:
+            for v, w in self.graph[u]:
+                print(f"  {u} -> {v} (weight: {w})")
+        
+        if self.capacity:
+            print("\nCapacities:")
+            for u in self.capacity:
+                for v in self.capacity[u]:
+                    print(f"  {u} -> {v} (capacity: {self.capacity[u][v]})")
+
+        if self.cost:
+            print("\nCosts:")
+            for u in self.cost:
+                for v in self.cost[u]:
+                    print(f"  {u} -> {v} (cost: {self.cost[u][v]})")
 
 
 
